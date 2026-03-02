@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <title>SGP-SEDE (Versão Gemini 1.5)</title>
+  <style>
+    :root {
+      --wa-dark: #075E54; --wa-teal: #128C7E; --wa-chat-bg: #E5DDD5;
+      --wa-msg-user: #DCF8C6; --wa-msg-bot: #FFFFFF; --wa-text: #111B21;
+      --radius: 12px; --shadow: 0 1px 0.5px rgba(0,0,0,0.13);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif; background-color: var(--wa-chat-bg); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+    header { background-color: var(--wa-dark); color: #fff; padding: 15px; text-align: center; flex-shrink: 0; z-index: 10; }
+    .screen { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+    .view-card { background: #fff; border-radius: var(--radius); padding: 25px; width: 90%; max-width: 450px; margin: auto; box-shadow: var(--shadow); }
+    .chat-area { flex: 1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); padding: 15px; overflow-y: auto; display: flex; flex-direction: column; }
+    .msg { max-width: 85%; padding: 10px 14px; border-radius: 8px; margin: 6px 0; font-size: 15px; line-height: 1.5; box-shadow: var(--shadow); position: relative; }
+    .msg.user { align-self: flex-end; background: var(--wa-msg-user); border-top-right-radius: 0; }
+    .msg.bot { align-self: flex-start; background: var(--wa-msg-bot); border-top-left-radius: 0; }
+    .yt-card { width: 100%; margin-top: 10px; border-radius: 8px; overflow: hidden; border: 1px solid #eee; background: #fff; }
+    .yt-card img { width: 100%; display: block; }
+    .yt-link-btn { display: block; text-align: center; padding: 12px; background: #f0f2f5; color: var(--wa-teal); text-decoration: none; font-weight: bold; }
+    .footer-bar { background: #f0f2f5; padding: 10px 15px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #ddd; }
+    .input-wrapper { flex: 1; background: #fff; border-radius: 25px; display: flex; align-items: center; padding: 5px 15px; }
+    .input-wrapper input { flex: 1; border: none; padding: 10px 0; font-size: 16px; outline: none; background: transparent; }
+    .send-btn { background-color: var(--wa-teal); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .choice-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .choice-btn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--wa-teal); background: #fff; color: var(--wa-teal); font-weight: bold; cursor: pointer; min-width: 100px; font-size: 13px; }
+    .choice-btn.fill { background: var(--wa-teal); color: #fff; }
+    .input-label { display: block; font-size: 13px; color: var(--wa-teal); font-weight: 600; margin-bottom: 6px; }
+    .form-input { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin-bottom: 15px; outline: none; }
+    .typing { font-style: italic; color: #666; font-size: 12px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <header><div class="title">SGP-SEDE</div></header>
+  <main class="screen">
+    <section id="view-1" class="view-card" style="margin-top: 50px;">
+      <label class="input-label">NOME</label> <input id="nome" class="form-input" type="text" placeholder="Seu nome">
+      <label class="input-label">MATRÍCULA</label> <input id="matricula" class="form-input" type="tel" placeholder="000000">
+      <button onclick="startApp()" style="width:100%; padding:15px; background:var(--wa-teal); color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">ACESSAR</button>
+    </section>
+
+    <div id="view-2" style="display:none; flex: 1; flex-direction: column; overflow: hidden;">
+      <div class="chat-area" id="chat-area"></div>
+      <div id="typing-indicator" style="display:none; padding: 0 15px;" class="typing">Gemini está digitando...</div>
+      <div class="footer-bar">
+        <div class="input-wrapper">
+          <input id="chat-input" placeholder="Mensagem">
+        </div>
+        <button id="chat-send" class="send-btn">
+          <svg viewbox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSnpX_1E_Rl8WpKjJYA-qECY9gc9XizO51MHSagv-9Lm2ckEmLVypx6b254ONVK5Z4ieAEE74hmcFbZ/pub?gid=0&single=true&output=csv";
+    
+    // ATENÇÃO: COLOQUE AQUI O LINK QUE O RENDER TE DEU
+    const RENDER_API_URL = "https://botsgp.onrender.com/chat"; 
+    const WHATSAPP_NUM = "5561992282334";
+    
+    let faqData = [];
+    let conversationHistory = "";
+    let userName = "";
+
+    function normalize(t) { return t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim(); }
+
+    function addMsg(txt, type, isHTML = false) {
+      const chat = document.getElementById("chat-area");
+      const div = document.createElement("div");
+      div.className = "msg " + type;
+      if (isHTML) div.innerHTML = txt; else div.textContent = txt;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      conversationHistory += (type === 'user' ? "Usuário: " : "SGP: ") + (isHTML ? "[Mídia]" : txt) + "\n";
+    }
+
+    async function startApp() {
+      userName = document.getElementById("nome").value.trim();
+      if (!userName) return alert("Informe seu nome.");
+      document.getElementById("view-1").style.display = "none";
+      document.getElementById("view-2").style.display = "flex";
+      
+      try {
+        const r = await fetch(CSV_URL);
+        const csv = await r.text();
+        // Colunas: Pergunta, Chaves, Resposta, Categoria, Subcategoria
+        faqData = csv.split("\n").slice(1).map(l => {
+          const c = l.split(",");
+          return { p: c[1], k: c[2], r: c[3], cat: c[4], sub: c[5] };
+        }).filter(f => f.r);
+        addMsg(`Olá ${userName}, sou o assistente do SGP-SEDE turbinado com Gemini. Como posso ajudar?`, "bot");
+      } catch(e) {
+        addMsg("Erro ao carregar base de conhecimento.", "bot");
+      }
+    }
+
+    async function onSend() {
+      const input = document.getElementById("chat-input");
+      const val = input.value.trim();
+      if (!val) return;
+
+      addMsg(val, "user");
+      input.value = "";
+      
+      // Mostrar indicador de digitação
+      const typingIndicator = document.getElementById("typing-indicator");
+      typingIndicator.style.display = "block";
+
+      try {
+        const response = await fetch(RENDER_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pergunta: val,
+            nome: userName,
+            base_conhecimento: faqData
+          })
+        });
+
+        const data = await response.json();
+        typingIndicator.style.display = "none";
+        
+        if (data.resposta) {
+          renderFinalResponse(data.resposta);
+        } else {
+          addMsg("Desculpe, tive um problema para processar sua dúvida.", "bot");
+        }
+      } catch (error) {
+        typingIndicator.style.display = "none";
+        addMsg("Opa! Meu servidor está acordando ou está offline. Tente em alguns segundos.", "bot");
+        setTimeout(askWhatsAppFallback, 2000);
+      }
+    }
+
+    function renderFinalResponse(text) {
+      const cleanId = text.trim();
+      // Verifica se a resposta é apenas um ID do Youtube
+      if (cleanId.length === 11 && !cleanId.includes(" ")) {
+        const thumb = `https://img.youtube.com/vi/${cleanId}/hqdefault.jpg`;
+        const link = `https://www.youtube.com/watch?v=${cleanId}`;
+        addMsg(`<div class="yt-card"><img src="${thumb}"><a href="${link}" target="_blank" class="yt-link-btn">▶ ASSISTIR VÍDEO NO YOUTUBE</a></div>`, "bot", true);
+      } else {
+        addMsg(text, "bot");
+      }
+      setTimeout(askMoreHelp, 1500);
+    }
+
+    function askMoreHelp() {
+      const div = document.createElement("div");
+      div.className = "msg bot";
+      div.innerHTML = `<div>Resolvi sua dúvida ou precisa de algo mais?</div>
+        <div class="choice-row">
+          <button class="choice-btn fill" onclick="this.parentElement.parentElement.remove(); addMsg('Qual a sua próxima dúvida?', 'bot')">Nova Dúvida</button>
+          <button class="choice-btn" onclick="this.parentElement.parentElement.remove(); askWhatsAppFallback()">Falar com Humano</button>
+        </div>`;
+      document.getElementById("chat-area").appendChild(div);
+      document.getElementById("chat-area").scrollTop = document.getElementById("chat-area").scrollHeight;
+    }
+
+    function askWhatsAppFallback() {
+      const div = document.createElement("div");
+      div.className = "msg bot";
+      div.innerHTML = `<div>Deseja encerrar este chat e ir para o WhatsApp com um resumo do que conversamos?</div>
+        <div class="choice-row">
+          <button class="choice-btn fill" onclick="goToWhatsApp()">Sim, abrir WhatsApp</button>
+          <button class="choice-btn" onclick="location.reload()">Não, fechar chat</button>
+        </div>`;
+      document.getElementById("chat-area").appendChild(div);
+      document.getElementById("chat-area").scrollTop = document.getElementById("chat-area").scrollHeight;
+    }
+
+    function goToWhatsApp() {
+      const resumo = encodeURIComponent(`*SGP-BOT RESUMO*\nUsuário: ${userName}\nMatrícula: ${document.getElementById("matricula").value}\n\n*Histórico:*\n${conversationHistory}`);
+      window.open(`https://wa.me/${WHATSAPP_NUM}?text=${resumo}`);
+      location.reload();
+    }
+
+    document.getElementById("chat-send").onclick = onSend;
+    document.getElementById("chat-input").onkeypress = (e) => { if(e.key === 'Enter') onSend(); };
+  </script>
+</body>
+</html>
