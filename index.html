@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>Marçal Bot SGP-SEDE</title>
+  <title>SGP-SEDE Gemini</title>
   <style>
     :root {
       --wa-dark: #075E54; --wa-teal: #128C7E; --wa-chat-bg: #E5DDD5;
@@ -12,42 +12,61 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Segoe UI, Arial, sans-serif; background-color: var(--wa-chat-bg); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-    header { background-color: var(--wa-dark); color: #fff; padding: 15px; text-align: center; }
+    header { background-color: var(--wa-dark); color: #fff; padding: 15px; text-align: center; font-weight: bold; }
+    
     .chat-area { flex: 1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); padding: 15px; overflow-y: auto; display: flex; flex-direction: column; }
-    .msg { max-width: 85%; padding: 10px 14px; border-radius: 8px; margin: 6px 0; font-size: 15px; line-height: 1.5; box-shadow: var(--shadow); }
+    .msg { max-width: 85%; padding: 12px 16px; border-radius: 10px; margin: 8px 0; font-size: 16px; line-height: 1.4; box-shadow: var(--shadow); }
     .msg.user { align-self: flex-end; background: var(--wa-msg-user); border-top-right-radius: 0; }
     .msg.bot { align-self: flex-start; background: var(--wa-msg-bot); border-top-left-radius: 0; }
     
-    /* BOTÕES DINÂMICOS */
     .dynamic-button {
-      display: inline-block; padding: 8px 12px; margin: 5px 4px; border-radius: 20px;
-      border: 1.5px solid var(--wa-teal); background: white; color: var(--wa-teal);
-      font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s;
+      display: inline-block; padding: 12px 18px; margin: 6px 4px; border-radius: 25px;
+      border: 2px solid var(--wa-teal); background: white; color: var(--wa-teal);
+      font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s;
     }
     .dynamic-button:hover { background: var(--wa-teal); color: white; }
 
-    .footer-bar { background: #f0f2f5; padding: 10px; display: flex; align-items: center; gap: 10px; }
-    .input-wrapper { flex: 1; background: #fff; border-radius: 25px; padding: 5px 15px; }
-    .input-wrapper input { width: 100%; border: none; padding: 10px 0; outline: none; }
-    .send-btn { background: var(--wa-teal); color: #fff; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; }
-    .view-card { background: #fff; border-radius: var(--radius); padding: 25px; width: 90%; max-width: 400px; margin: 50px auto; }
-    .form-input { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin-bottom: 15px; }
+    .footer-bar { background: #f0f2f5; padding: 15px; display: flex; align-items: center; gap: 12px; border-top: 1px solid #ddd; }
+    .input-wrapper { flex: 1; background: #fff; border-radius: 30px; padding: 8px 20px; }
+    .input-wrapper input { width: 100%; border: none; padding: 12px 0; outline: none; font-size: 17px; }
+    
+    .send-btn { 
+        background: var(--wa-teal); color: #fff; border: none; 
+        width: 55px; height: 55px; border-radius: 50%; 
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .send-btn svg { width: 28px; height: 28px; fill: white; }
+
+    .view-card { background: #fff; border-radius: var(--radius); padding: 30px; width: 90%; max-width: 400px; margin: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .form-input { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 20px; font-size: 16px; }
+    .input-label { display: block; font-size: 13px; color: var(--wa-teal); font-weight: 600; margin-bottom: 6px; }
   </style>
 </head>
 <body>
   <header>SGP-SEDE</header>
   <main style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+    
     <section id="view-1" class="view-card">
-      <input id="nome" class="form-input" placeholder="Seu nome">
-      <button onclick="startApp()" style="width:100%; padding:15px; background:var(--wa-teal); color:#fff; border:none; border-radius:8px; font-weight:bold;">ACESSAR</button>
+      <h3 style="margin-bottom:20px; color:var(--wa-dark); text-align:center;">Acesso ao Chat</h3>
+      
+      <label class="input-label">NOME</label>
+      <input id="nome" class="form-input" type="text" placeholder="Digite seu nome">
+      
+      <label class="input-label">MATRÍCULA</label>
+      <input id="matricula" class="form-input" type="tel" placeholder="000000">
+      
+      <button onclick="startApp()" style="width:100%; padding:18px; background:var(--wa-teal); color:#fff; border:none; border-radius:8px; font-weight:bold; font-size:16px; cursor:pointer;">ACESSAR CHAT</button>
     </section>
 
     <div id="view-2" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
       <div class="chat-area" id="chat-area"></div>
-      <div id="typing" style="display:none; padding:10px; font-style:italic;">Digitando...</div>
+      <div id="typing" style="display:none; padding:10px 20px; font-style:italic; font-size:13px; color:#666;">Marçal Bot está escrevendo...</div>
       <div class="footer-bar">
-        <div class="input-wrapper"><input id="chat-input" placeholder="Mensagem"></div>
-        <button id="chat-send" class="send-btn">➤</button>
+        <div class="input-wrapper"><input id="chat-input" placeholder="Digite sua dúvida..."></div>
+        <button id="chat-send" class="send-btn">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
       </div>
     </div>
   </main>
@@ -59,48 +78,57 @@
     let faqData = [];
     let userName = "";
 
-    function addMsg(txt, type, isHTML = false) {
+    function addMsg(txt, type) {
       const chat = document.getElementById("chat-area");
       const div = document.createElement("div");
       div.className = "msg " + type;
-      if (isHTML) div.innerHTML = txt; else div.textContent = txt;
+      div.textContent = txt;
       chat.appendChild(div);
       chat.scrollTop = chat.scrollHeight;
     }
 
     async function startApp() {
       userName = document.getElementById("nome").value.trim();
-      if (!userName) return alert("Nome obrigatório");
+      const matricula = document.getElementById("matricula").value.trim();
+      
+      if (!userName || !matricula) return alert("Por favor, preencha nome e matrícula.");
+      
       document.getElementById("view-1").style.display = "none";
       document.getElementById("view-2").style.display = "flex";
       
-      const r = await fetch(CSV_URL);
-      const csv = await r.text();
-      faqData = csv.split("\n").slice(1).map(l => {
-        const c = l.split(",");
-        return { cat: c[4], sub: c[5], p: c[1], r: c[3] };
-      });
-      addMsg(`E aí ${userName}! Como posso te ajudar hoje?`, "bot");
+      try {
+        const r = await fetch(CSV_URL);
+        const csv = await r.text();
+        faqData = csv.split("\n").slice(1).map(l => {
+          const c = l.split(",");
+          return { cat: c[4], sub: c[5], p: c[1], r: c[3] };
+        }).filter(f => f.r);
+        addMsg(`Olá ${userName}! Matrícula ${matricula} confirmada. Sou o Marçal Bot. Como posso ajudar?`, "bot");
+      } catch(e) { addMsg("Erro ao carregar base de dados.", "bot"); }
     }
 
-    async function onSend() {
+    async function onSend(textoManual = null) {
       const input = document.getElementById("chat-input");
-      const val = input.value.trim();
+      const val = textoManual || input.value.trim();
       if (!val) return;
 
       addMsg(val, "user");
-      input.value = "";
+      if (!textoManual) input.value = "";
       document.getElementById("typing").style.display = "block";
 
-      const res = await fetch(RENDER_API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pergunta: val, nome: userName, base_conhecimento: faqData })
-      });
-
-      const data = await res.json();
-      document.getElementById("typing").style.display = "none";
-      renderResponse(data.resposta);
+      try {
+        const res = await fetch(RENDER_API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pergunta: val, nome: userName, base_conhecimento: faqData })
+        });
+        const data = await res.json();
+        document.getElementById("typing").style.display = "none";
+        renderResponse(data.resposta);
+      } catch(e) { 
+        document.getElementById("typing").style.display = "none";
+        addMsg("Opa! Servidor offline. Tente novamente.", "bot"); 
+      }
     }
 
     function renderResponse(text) {
@@ -109,23 +137,25 @@
       let match;
       while ((match = regexBotao.exec(text)) !== null) botoes.push(match[1]);
 
-      const textoLimpo = text.replace(regexBotao, '').trim();
+      const textoLimpo = text.replace(regexBotao, '').replace(/\s+/g, ' ').trim();
       addMsg(textoLimpo, "bot");
 
       if (botoes.length > 0) {
         const container = document.createElement("div");
+        container.style.margin = "10px 0";
         botoes.forEach(opt => {
           const btn = document.createElement("button");
           btn.className = "dynamic-button";
           btn.innerText = opt;
-          btn.onclick = () => { document.getElementById("chat-input").value = opt; onSend(); container.remove(); };
+          btn.onclick = () => { container.remove(); onSend(opt); };
           container.appendChild(btn);
         });
         document.getElementById("chat-area").appendChild(container);
+        document.getElementById("chat-area").scrollTop = document.getElementById("chat-area").scrollHeight;
       }
     }
 
-    document.getElementById("chat-send").onclick = onSend;
+    document.getElementById("chat-send").onclick = () => onSend();
     document.getElementById("chat-input").onkeypress = (e) => { if(e.key === 'Enter') onSend(); };
   </script>
 </body>
