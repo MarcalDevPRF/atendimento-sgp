@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>SGP Bot - SGP-SEDE</title>
+  <title>SGP BOT - Versão Completa</title>
   <style>
     :root {
       --wa-dark: #075E54; --wa-teal: #128C7E; --wa-chat-bg: #E5DDD5;
@@ -15,51 +15,47 @@
     header { background-color: var(--wa-dark); color: #fff; padding: 15px; text-align: center; font-weight: bold; }
     
     .chat-area { flex: 1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); padding: 15px; overflow-y: auto; display: flex; flex-direction: column; }
-    .msg { max-width: 85%; padding: 12px 16px; border-radius: 10px; margin: 8px 0; font-size: 16px; line-height: 1.4; box-shadow: var(--shadow); position: relative; }
+    .msg { max-width: 85%; padding: 12px 16px; border-radius: 10px; margin: 8px 0; font-size: 16px; line-height: 1.4; box-shadow: var(--shadow); }
     .msg.user { align-self: flex-end; background: var(--wa-msg-user); border-top-right-radius: 0; }
     .msg.bot { align-self: flex-start; background: var(--wa-msg-bot); border-top-left-radius: 0; }
 
-    /* VIDEOS YOUTUBE */
-    .yt-card { width: 100%; margin-top: 10px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #fff; }
-    .yt-card img { width: 100%; display: block; }
-    .yt-btn { display: block; text-align: center; padding: 12px; background: #f0f2f5; color: #ff0000; text-decoration: none; font-weight: bold; }
+    /* CARDS DE MÍDIA (YouTube e Imagens) */
+    .media-card { width: 100%; margin-top: 10px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; background: #fff; max-width: 300px; }
+    .media-card img { width: 100%; display: block; object-fit: cover; max-height: 200px; }
+    .media-btn { display: block; text-align: center; padding: 12px; background: #f0f2f5; color: var(--wa-teal); text-decoration: none; font-weight: bold; font-size: 13px; border-top: 1px solid #eee; }
+    .media-btn.yt { color: #ff0000; }
 
     .dynamic-button {
-      display: inline-block; padding: 12px 18px; margin: 6px 4px; border-radius: 25px;
+      display: inline-block; padding: 10px 16px; margin: 5px 4px; border-radius: 20px;
       border: 2px solid var(--wa-teal); background: white; color: var(--wa-teal);
-      font-weight: bold; cursor: pointer; font-size: 14px;
+      font-weight: bold; cursor: pointer; font-size: 13px;
     }
 
     .footer-bar { background: #f0f2f5; padding: 15px; display: flex; align-items: center; gap: 12px; }
     .input-wrapper { flex: 1; background: #fff; border-radius: 30px; padding: 5px 20px; }
     .input-wrapper input { width: 100%; border: none; padding: 12px 0; outline: none; font-size: 16px; }
     
-    .send-btn { 
-        background: var(--wa-teal); color: #fff; border: none; 
-        width: 55px; height: 55px; border-radius: 50%; 
-        cursor: pointer; display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
+    .send-btn { background: var(--wa-teal); color: #fff; border: none; width: 55px; height: 55px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
     .view-card { background: #fff; border-radius: var(--radius); padding: 30px; width: 90%; max-width: 400px; margin: auto; }
     .form-input { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
   </style>
 </head>
 <body>
-  <header>SGP BOT - SGP-SEDE</header>
+  <header>SGP BOT - ATENDIMENTO</header>
   <main style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
     
     <section id="view-1" class="view-card">
-      <label style="font-size: 12px; color: var(--wa-teal); font-weight: bold;">NOME</label>
-      <input id="nome" class="form-input" placeholder="Seu nome">
-      <label style="font-size: 12px; color: var(--wa-teal); font-weight: bold;">MATRÍCULA</label>
+      <label style="font-size: 11px; color: var(--wa-teal); font-weight: bold;">NOME COMPLETO</label>
+      <input id="nome" class="form-input" placeholder="Ex: André Luiz">
+      <label style="font-size: 11px; color: var(--wa-teal); font-weight: bold;">MATRÍCULA</label>
       <input id="matricula" class="form-input" type="tel" placeholder="000000">
-      <button onclick="startApp()" style="width:100%; padding:15px; background:var(--wa-teal); color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">ACESSAR</button>
+      <button onclick="startApp()" style="width:100%; padding:15px; background:var(--wa-teal); color:#fff; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">ACESSAR SISTEMA</button>
     </section>
 
     <div id="view-2" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
       <div class="chat-area" id="chat-area"></div>
-      <div id="typing" style="display:none; padding:10px 20px; font-style:italic; font-size:13px;">SGP Bot está escrevendo...</div>
+      <div id="typing" style="display:none; padding:10px 20px; font-style:italic; font-size:13px;">SGP Bot está processando...</div>
       <div class="footer-bar">
         <div class="input-wrapper"><input id="chat-input" placeholder="Digite sua dúvida..."></div>
         <button id="chat-send" class="send-btn">
@@ -75,6 +71,8 @@
     
     let faqData = [];
     let userName = "";
+    let userMatricula = "";
+    let conversationHistory = ""; 
 
     function addMsg(txt, type, isHTML = false) {
       const chat = document.getElementById("chat-area");
@@ -83,13 +81,13 @@
       if (isHTML) div.innerHTML = txt; else div.textContent = txt;
       chat.appendChild(div);
       chat.scrollTop = chat.scrollHeight;
+      if (!isHTML) conversationHistory += (type === "user" ? "VOCÊ: " : "SGP BOT: ") + txt + "\n";
     }
 
     async function startApp() {
       userName = document.getElementById("nome").value.trim();
-      const mat = document.getElementById("matricula").value.trim();
-      if (!userName || !mat) return alert("Preencha todos os campos.");
-      
+      userMatricula = document.getElementById("matricula").value.trim();
+      if (!userName || !userMatricula) return alert("Preencha Nome e Matrícula.");
       document.getElementById("view-1").style.display = "none";
       document.getElementById("view-2").style.display = "flex";
       
@@ -99,14 +97,13 @@
         const c = l.split(",");
         return { cat: c[4], sub: c[5], p: c[1], r: c[3] };
       }).filter(f => f.r);
-      addMsg(`Olá ${userName}! Sou o SGP Bot. Como posso ajudar?`, "bot");
+      addMsg(`Olá ${userName}! Sou o SGP Bot. Como posso ajudar você hoje?`, "bot");
     }
 
     async function onSend(textoManual = null) {
       const input = document.getElementById("chat-input");
       const val = textoManual || input.value.trim();
       if (!val) return;
-
       addMsg(val, "user");
       if (!textoManual) input.value = "";
       document.getElementById("typing").style.display = "block";
@@ -116,46 +113,62 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pergunta: val, nome: userName, base_conhecimento: faqData })
       });
-
       const data = await res.json();
       document.getElementById("typing").style.display = "none";
       renderResponse(data.resposta);
     }
 
     function renderResponse(text) {
-      // 1. Detectar Encerramento ou WhatsApp
+      const chatArea = document.getElementById("chat-area");
+
       if (text.includes("ATENDIMENTO_CONCLUIDO")) {
-        addMsg("Agradecemos o seu contato, qualquer dúvida é só perguntar! 😊", "bot");
-        setTimeout(() => location.reload(), 4000);
+        addMsg("Agradecemos o contato. Encerrando atendimento...", "bot");
+        setTimeout(() => location.reload(), 3000);
         return;
       }
       if (text.includes("ENCAMINHAR_WHATSAPP")) {
-        addMsg("Vou te encaminhar agora para o suporte humano no WhatsApp. 🛠️", "bot");
-        setTimeout(() => window.open(`https://wa.me/5561992282334`), 2000);
+        addMsg("Vou gerar o resumo para o suporte humano.", "bot");
+        createWhatsAppButton();
         return;
       }
 
-      // 2. Correção de Links de Vídeo (Regex para extrair ID do Youtube)
+      // Regex para Imagens (Links diretos)
+      const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp))/i;
+      const matchImg = text.match(imgRegex);
+
+      // Regex para YouTube
       const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-      const matchVideo = text.match(ytRegex);
-      
-      // 3. Detectar Botões
+      const matchVideo = text.match(ytRegex) || (text.trim().length === 11 && !text.includes(" ") ? [text.trim(), text.trim()] : null);
+
+      // Regex para Botões
       const regexBotao = /\[BOTÃO: (.*?)\]/g;
       let botoes = [];
       let matchBtn;
       while ((matchBtn = regexBotao.exec(text)) !== null) botoes.push(matchBtn[1]);
 
-      let textoLimpo = text.replace(regexBotao, '').replace(ytRegex, '').trim();
-      addMsg(textoLimpo, "bot");
+      let textoLimpo = text.replace(regexBotao, '').replace(ytRegex, '').replace(imgRegex, '').trim();
+      addMsg(textoLimpo || "Veja o que encontrei:", "bot");
 
-      // Adicionar Card de Vídeo se existir
-      if (matchVideo) {
-        const id = matchVideo[1];
-        const cardHTML = `<div class="yt-card"><img src="https://img.youtube.com/vi/${id}/hqdefault.jpg"><a href="https://youtu.be/${id}" target="_blank" class="yt-btn">▶ ASSISTIR VÍDEO</a></div>`;
-        addMsg(cardHTML, "bot", true);
+      // Render de Imagem
+      if (matchImg) {
+        const imgUrl = matchImg[1];
+        addMsg(`
+          <div class="media-card">
+            <img src="${imgUrl}">
+            <a href="${imgUrl}" target="_blank" class="media-btn">📥 BAIXAR IMAGEM ORIGINAL</a>
+          </div>`, "bot", true);
       }
 
-      // Adicionar botões Sim/Não se o bot perguntou se resolveu
+      // Render de YouTube
+      if (matchVideo) {
+        const id = matchVideo[1];
+        addMsg(`
+          <div class="media-card">
+            <img src="https://img.youtube.com/vi/${id}/hqdefault.jpg">
+            <a href="https://youtu.be/${id}" target="_blank" class="media-btn yt">▶ ASSISTIR VÍDEO</a>
+          </div>`, "bot", true);
+      }
+
       if (text.includes("resolveu sua dúvida?")) {
           botoes.push("Sim, resolveu!", "Não, preciso de ajuda");
       }
@@ -169,8 +182,20 @@
           btn.onclick = () => { container.remove(); onSend(opt); };
           container.appendChild(btn);
         });
-        document.getElementById("chat-area").appendChild(container);
+        chatArea.appendChild(container);
       }
+    }
+
+    function createWhatsAppButton() {
+      const btn = document.createElement("button");
+      btn.className = "dynamic-button";
+      btn.style.cssText = "background: #25D366; color: white; border: none; width: 90%;";
+      btn.innerText = "✉ ENVIAR RESUMO AO WHATSAPP";
+      btn.onclick = () => {
+        const msg = `*SGP BOT - RESUMO*\nUsuário: ${userName}\nMatrícula: ${userMatricula}\n\n*CONVERSA:*\n${conversationHistory}`;
+        window.open(`https://wa.me/5561992282334?text=${encodeURIComponent(msg)}`, "_blank");
+      };
+      document.getElementById("chat-area").appendChild(btn);
     }
 
     document.getElementById("chat-send").onclick = () => onSend();
