@@ -102,8 +102,14 @@
         const rows = csv.split(/\r?\n/).slice(1);
         faqData = rows.map(row => {
           const c = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-          return { pergunta: c[1], tags: c[2], resposta: c[3], cat: c[4], sub: c[5] };
-        }).filter(f => f.resposta);
+// No index.html, force estes nomes:
+return { 
+    pergunta: c[1]?.trim(),
+    tags: c[2]?.trim(),      // O servidor espera 'tags'
+    resposta: c[3]?.trim(),  // O servidor espera 'resposta'
+    categoria: c[4]?.trim(),
+    subcategoria: c[5]?.trim()
+};        }).filter(f => f.resposta);
         console.log("Base SGP carregada com sucesso.");
       } catch (e) { console.error("Erro ao carregar CSV."); }
     }
@@ -240,3 +246,4 @@
   </script>
 </body>
 </html>
+
