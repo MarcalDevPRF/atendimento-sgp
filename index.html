@@ -3,42 +3,55 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-  <title>SGP BOT - Híbrido</title>
+  <title>SGP BOT - Sistema Híbrido</title>
   <style>
     :root { --wa-dark: #075E54; --wa-teal: #128C7E; --wa-chat-bg: #E5DDD5; --wa-msg-user: #DCF8C6; --wa-msg-bot: #FFFFFF; --radius: 15px; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', Helvetica, sans-serif; background-color: var(--wa-chat-bg); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-    header { background: var(--wa-dark); color: #fff; padding: 15px; text-align: center; font-weight: bold; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; }
+    body { background-color: var(--wa-chat-bg); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    header { background: var(--wa-dark); color: #fff; padding: 15px; text-align: center; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    
     .chat-area { flex: 1; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-    .msg { max-width: 85%; padding: 10px 15px; border-radius: var(--radius); font-size: 15px; line-height: 1.4; box-shadow: 0 1px 1px rgba(0,0,0,0.1); white-space: pre-wrap; word-wrap: break-word; }
-    .msg.bot { align-self: flex-start; background: var(--wa-msg-bot); border-top-left-radius: 0; }
-    .msg.user { align-self: flex-end; background: var(--wa-msg-user); border-top-right-radius: 0; }
-    .media-card { width: 100%; margin-top: 10px; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; background: #fff; max-width: 280px; }
-    .media-card img { width: 100%; display: block; object-fit: contain; }
-    .media-btn { display: block; text-align: center; padding: 10px; background: #f8f9fa; color: var(--wa-teal); text-decoration: none; font-weight: bold; font-size: 12px; border-top: 1px solid #eee; }
-    .dynamic-button { display: inline-block; padding: 10px 18px; margin: 5px 4px; border-radius: 25px; border: 1px solid var(--wa-teal); background: white; color: var(--wa-teal); font-weight: 600; cursor: pointer; font-size: 13px; }
-    .footer-bar { background: #f0f2f5; padding: 10px 15px; display: flex; align-items: center; gap: 10px; }
-    .input-wrapper { flex: 1; background: #fff; border-radius: 25px; padding: 5px 15px; }
+    
+    .msg { max-width: 85%; padding: 10px 15px; border-radius: var(--radius); font-size: 15px; line-height: 1.4; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); white-space: pre-wrap; word-wrap: break-word; }
+    .msg.bot { align-self: flex-start; background: var(--wa-msg-bot); border-top-left-radius: 0; color: #333; }
+    .msg.user { align-self: flex-end; background: var(--wa-msg-user); border-top-right-radius: 0; color: #333; }
+
+    .media-card { width: 100%; margin-top: 8px; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; background: #fff; }
+    .media-card img { width: 100%; display: block; max-height: 300px; object-fit: contain; background: #f9f9f9; }
+    .media-btn { display: block; text-align: center; padding: 10px; background: #f8f9fa; color: var(--wa-teal); text-decoration: none; font-weight: bold; font-size: 13px; border-top: 1px solid #eee; }
+
+    .dynamic-button { display: inline-block; padding: 10px 18px; margin: 5px 4px; border-radius: 25px; border: 1px solid var(--wa-teal); background: white; color: var(--wa-teal); font-weight: 600; cursor: pointer; font-size: 13px; transition: 0.2s; }
+    .dynamic-button:hover { background: var(--wa-teal); color: white; }
+
+    .footer-bar { background: #f0f2f5; padding: 10px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #ddd; }
+    .input-wrapper { flex: 1; background: #fff; border-radius: 25px; padding: 5px 15px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
     .input-wrapper input { width: 100%; border: none; padding: 8px 0; outline: none; font-size: 16px; }
-    .send-btn { background: var(--wa-teal); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
-    .view-card { background: #fff; border-radius: var(--radius); padding: 30px; width: 90%; max-width: 380px; margin: auto; text-align: center; }
+    
+    .send-btn { background: var(--wa-teal); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+    
+    .login-screen { background: #fff; padding: 30px; border-radius: var(--radius); width: 90%; max-width: 350px; margin: auto; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .login-screen input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; }
+    .login-screen button { width: 100%; padding: 12px; background: var(--wa-teal); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <header>SGP BOT - ATENDIMENTO</header>
+  <header>SGP BOT - OFICIAL</header>
 
   <main style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-    <section id="view-1" class="view-card">
-      <h2 style="margin-bottom:20px;">Acesso</h2>
-      <input id="nome" placeholder="Nome" style="width:100%; padding:12px; margin-bottom:10px;">
-      <input id="matricula" placeholder="Matrícula" style="width:100%; padding:12px; margin-bottom:10px;">
-      <button onclick="startApp()" style="width:100%; padding:12px; background:var(--wa-teal); color:white; border:none; border-radius:8px;">ENTRAR</button>
+    
+    <section id="login-view" class="login-screen">
+      <h2 style="margin-bottom:20px; color: var(--wa-dark);">Portal SGP</h2>
+      <input id="nome" placeholder="Seu nome completo">
+      <input id="matricula" placeholder="Sua matrícula" type="tel">
+      <button onclick="startApp()">INICIAR ATENDIMENTO</button>
     </section>
 
-    <div id="view-2" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
+    <div id="chat-view" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
       <div class="chat-area" id="chat-area"></div>
-      <div id="typing" style="display:none; padding:5px 25px; font-size:12px;">Processando...</div>
+      <div id="typing" style="display:none; padding:10px 25px; font-size:12px; color: #666; font-style: italic;">SGP Bot está processando...</div>
+      
       <div class="footer-bar">
         <div class="input-wrapper"><input id="chat-input" placeholder="Digite sua dúvida..."></div>
         <button onclick="onSend()" class="send-btn">
@@ -51,7 +64,8 @@
   <script>
     const CSV_URL = "SUA_URL_DO_CSV_AQUI"; 
     const RENDER_API_URL = "https://botsgp.onrender.com/chat";
-    let faqData = [], userName = "", conversationHistory = "";
+    
+    let faqData = [], userName = "", userMatricula = "";
 
     async function preLoadData() {
       try {
@@ -66,19 +80,21 @@
             resposta: c[3]?.replace(/"/g, "").trim() || ""
           };
         }).filter(f => f.resposta);
-      } catch (e) { console.error("Erro CSV"); }
+        console.log("Base carregada:", faqData.length, "itens.");
+      } catch (e) { console.error("Erro ao carregar CSV."); }
     }
     preLoadData();
 
     function startApp() {
-      userName = document.getElementById("nome").value;
-      if (!userName) return alert("Nome obrigatório");
-      document.getElementById("view-1").style.display = "none";
-      document.getElementById("view-2").style.display = "flex";
-      addMsg(`Olá *${userName}*! Como posso ajudar hoje?`, "bot");
+      userName = document.getElementById("nome").value.trim();
+      userMatricula = document.getElementById("matricula").value.trim();
+      if (!userName || !userMatricula) return alert("Por favor, preencha todos os campos.");
+      
+      document.getElementById("login-view").style.display = "none";
+      document.getElementById("chat-view").style.display = "flex";
+      addMsg(`Olá *${userName}*! Sou o assistente SGP. Como posso ajudar você hoje?`, "bot");
     }
 
-    // --- LOGICA HIBRIDA ---
     async function onSend(textoManual = null) {
       const input = document.getElementById("chat-input");
       const val = (textoManual || input.value).trim();
@@ -88,22 +104,24 @@
       if (!textoManual) input.value = "";
       document.getElementById("typing").style.display = "block";
 
-      // 1. TENTA BUSCA LOCAL
+      // --- LOGICA HÍBRIDA PASSO 1: BUSCA LOCAL POR TAGS | ---
       const termo = val.toLowerCase();
-      const match = faqData.find(i => 
-        i.pergunta.toLowerCase().includes(termo) || 
-        i.tags.toLowerCase().includes(termo)
-      );
+      const matchLocal = faqData.find(item => {
+        const p = item.pergunta.toLowerCase();
+        const t = item.tags.toLowerCase();
+        const listaTags = t.split('|').map(tag => tag.trim());
+        return p.includes(termo) || listaTags.some(tag => tag === termo || (termo.length > 3 && tag.includes(termo)));
+      });
 
-      if (match) {
+      if (matchLocal) {
         setTimeout(() => {
           document.getElementById("typing").style.display = "none";
-          renderResponse(match.resposta + "\n\nEssa informação resolveu sua dúvida?");
-        }, 500); // Pequeno delay para parecer natural
+          renderResponse(matchLocal.resposta + "\n\nEssa informação resolveu sua dúvida?");
+        }, 600);
         return;
       }
 
-      // 2. SE NÃO ACHAR LOCAL, CHAMA O GEMINI
+      // --- LOGICA HÍBRIDA PASSO 2: GEMINI (IA) ---
       try {
         const res = await fetch(RENDER_API_URL, {
           method: "POST",
@@ -115,14 +133,14 @@
         renderResponse(data.resposta);
       } catch (e) {
         document.getElementById("typing").style.display = "none";
-        addMsg("Desculpe, tente novamente em instantes.", "bot");
+        addMsg("Desculpe, estou com instabilidade na conexão. Tente novamente!", "bot");
       }
     }
 
     function formatDriveUrl(url) {
       if (url.includes("drive.google.com")) {
-        const id = url.match(/\/d\/(.+?)\//) || url.match(/id=(.+?)(&|$)/);
-        if (id) return `https://lh3.googleusercontent.com/d/${id[1]}`;
+        const idMatch = url.match(/\/d\/(.+?)\//) || url.match(/id=(.+?)(&|$)/);
+        if (idMatch) return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
       }
       return url;
     }
@@ -130,22 +148,23 @@
     function renderResponse(text) {
       const imgRegex = /(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)|https?:\/\/drive\.google\.com\/file\/d\/[^\s]+)/gi;
       const matchImg = text.match(imgRegex);
-      let textoLimpo = text.replace(imgRegex, '').trim();
+      const textoLimpo = text.replace(imgRegex, '').trim();
       
       addMsg(textoLimpo, "bot");
 
       if (matchImg) {
         matchImg.forEach(url => {
-          const dUrl = formatDriveUrl(url);
-          addMsg(`<div class="media-card"><img src="${dUrl}" onerror="this.src='https://via.placeholder.com/300?text=Imagem+Indisponível'"><a href="${url}" target="_blank" class="media-btn">📥 ABRIR ORIGINAL</a></div>`, "bot", true);
+          const directUrl = formatDriveUrl(url);
+          addMsg(`<div class="media-card"><img src="${directUrl}" onerror="this.src='https://via.placeholder.com/400x300?text=Arquivo+Mídia'"><a href="${url}" target="_blank" class="media-btn">📂 VER EM TELA CHEIA</a></div>`, "bot", true);
         });
       }
 
       if (text.includes("resolveu sua dúvida?")) {
         const container = document.createElement("div");
+        container.style.marginTop = "10px";
         container.innerHTML = `
-          <button class="dynamic-button" onclick="this.parentElement.remove(); addMsg('Ótimo! 👋', 'bot')">Sim, resolveu!</button>
-          <button class="dynamic-button" onclick="this.parentElement.remove(); addMsg('Vou te encaminhar para o WhatsApp oficial.', 'bot'); window.open('https://wa.me/5561992282334')">Não, falar com atendente</button>
+          <button class="dynamic-button" onclick="this.parentElement.remove(); addMsg('Ótimo! Estarei aqui se precisar de mais algo. 👋', 'bot')">Sim, resolveu!</button>
+          <button class="dynamic-button" onclick="this.parentElement.remove(); window.open('https://wa.me/5561992282334?text=Olá, o bot não conseguiu sanar minha dúvida.')">Não, falar com atendente</button>
         `;
         document.getElementById("chat-area").appendChild(container);
       }
@@ -160,9 +179,9 @@
       d.className = "msg " + type;
       if(html) d.innerHTML = t; else d.textContent = t;
       area.appendChild(d);
-      if(!html) conversationHistory += (type === "user" ? "U: " : "B: ") + t + "\n";
       area.scrollTop = area.scrollHeight;
     }
+
     document.getElementById("chat-input").onkeypress = (e) => { if(e.key === 'Enter') onSend(); };
   </script>
 </body>
